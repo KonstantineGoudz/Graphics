@@ -18,22 +18,30 @@ def write_some_data(context, filepath, use_some_setting):
     # convert the oject tot a mesh applying all modifiers
     scene= bpy.data.scenes['Scene']
     me = ob.to_mesh(scene,True,'PREVIEW')
+      
+#########################################################################################
+#########################################################################################
+#
+#                               find all unique uv/vertex combinations
+#
+#########################################################################################
+#########################################################################################
         
     verts =[]
     uvs   =[]
     faces =[]
 
-    #search for a an entery which has the same vertex index and uv combo
-    #if it does not exist add it 
     def findCopy(ind, uv):
         i=0
         for i in range(0,len(verts)):
             if (verts[i] == ind) and ( uvs[i]==uv):               
                 faces.append(i)
-                return i    
+                return i 
+         
+        faces.append(len(verts))    
         verts.append(ind)
         uvs.append(uv)
-        faces.append(i)    
+          
         return i
             
 
@@ -49,20 +57,19 @@ def write_some_data(context, filepath, use_some_setting):
     for p in me.polygons:
         for l in p.loop_indices:
             findCopy(me.loops[l].vertex_index,uv_layer[l].uv)
-
-    
+ 
     w('{\"object\":{\n')
     w('\"vertices\":[\n')
     #write vertices
     for v in verts[:-1]:
-        w('[%f,%f,%f],\n'%me_verts[v].co[:])
-    w('[%f,%f,%f]],\n'%me_verts[-1].co[:])
+        w('[%f,%f,%f],\n'%me.vertices[v].co[:])
+    w('[%f,%f,%f]],\n'%me.vertices[-1].co[:])
     
     #write uvs
     w('\"uvs\":[\n')
     for v in uvs[:-1]:
-        w('[%f,%f],\n'%v.uv.to_tuple())
-    w('[%f,%f]],\n'%uvs[-1]].to_tuple())
+        w('[%f,%f],\n'%v.   to_tuple())
+    w('[%f,%f]],\n'%uvs[-1].to_tuple())
     
     #write faces
     w('\"faces\":[\n')
@@ -71,7 +78,7 @@ def write_some_data(context, filepath, use_some_setting):
      
     w('%i,%i,%i]}}\n'%tuple(faces[-3:]))
         
-    fw('there are %d uvs' % len(uniuv))
+  #  fw('there are %d uvs' % len(uniuv))
     fw('there are %d unique vert/uv combos' % len(verts))
     fw('there are %d faces' % (len(faces)/3))
     fw('there are %d vertices' % len(me_verts))
@@ -91,7 +98,7 @@ from bpy.types import Operator
 class ExportSomeData(Operator, ExportHelper):
     """This appears in the tooltip of the operator and in the generated docs"""
     bl_idname = "export_test.some_data"  # important since its how bpy.ops.import_test.some_data is constructed
-    bl_label = "Export to JSON"
+    bl_label = "Export Some Data"
 
     # ExportHelper mixin class uses this
     filename_ext = ".txt"
