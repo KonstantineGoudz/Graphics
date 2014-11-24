@@ -114,7 +114,7 @@ class ExportSomeData(Operator, ExportHelper):
             name="Example Boolean",
             description="Example Tooltip",
             default=True,
-            )
+            ) 
 
     type = EnumProperty(
             name="Example Enum",
